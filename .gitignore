@@ -1,0 +1,8 @@
+my_faces/
+other_faces/
+__pycache__/
+*.model-100.index
+*.model-100.meta
+*.model-100.data-00000-of-00001
+tmp/
+checkpoint
