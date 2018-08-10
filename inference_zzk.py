@@ -96,7 +96,7 @@ def inference(input_tensor, train, regularizer):
     with tf.variable_op_scope("fc_layer_3"):
         fc_weights_3 = get_weight([FC2_SIZE, OUTPUT_SIZE])
         if regularizer !=None:
-            tf.add_to_collection("loss", regularizer(fc_weights_3))
+            tf.add_to_collection("losses", regularizer(fc_weights_3))
         fc_biases_3 = get_bias([OUTPUT_SIZE])
         logit = tf.matmul(fc_layer_2, fc_weights_3) + fc_biases_3
     return logit
