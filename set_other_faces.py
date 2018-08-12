@@ -4,8 +4,8 @@ import os
 import cv2
 import dlib
 
-input_dir = './lfw'
-output_dir = './other_faces'
+input_dir = 'D:/Total/own_face_recognition/dataset/lfw'
+output_dir = 'D:/Total/own_face_recognition/dataset/other_faces'
 size = 64
 
 if not os.path.exists(output_dir):

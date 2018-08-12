@@ -1,26 +1,7 @@
 import tensorflow as tf
 import cv2
 import numpy as np
-
-
-IMG_SIZE = 64
-NUM_CHANNELS = 3
-# 第一层卷积层的尺寸与深度
-CONV1_SIZE = 5
-CONV1_DEPTH = 18
-# 第二层
-CONV2_SIZE = 5
-CONV2_DEPTH = 36
-# 第三层
-CONV3_SIZE = 3
-CONV3_DEPTH = 64
-# 第四层
-CONV4_SIZE = 3
-CONV4_DEPTH = 108
-# 全连接层1
-FC1_SIZE = 256
-FC2_SIZE = 64
-OUTPUT_SIZE = 2
+from parameters import *
 
 
 def get_weight(shape):
@@ -56,8 +37,8 @@ def inference(input_tensor, train, regularizer):
         conv3_weights = get_weight([CONV3_SIZE, CONV3_SIZE, CONV2_DEPTH, CONV3_DEPTH])
         conv3_biases =get_bias([CONV3_DEPTH])
         conv3 = tf.nn.conv2d(pooling2, conv3_weights, strides=[1,1,1,1], padding='SAME')
-        relu3 = tf.nn/relu(tf.nn.bias_add(conv3, conv3_biases))
-    with tf.name_scopt("pooling3"):
+        relu3 = tf.nn.relu(tf.nn.bias_add(conv3, conv3_biases))
+    with tf.name_scope("pooling3"):
         pooling3 = tf.nn.max_pool(relu3, ksize=[1, 2, 2, 1],
                         strides=[1, 2, 2, 1], padding='SAME')
     # 第四层 4*4*conv4_depth(4*4*108)
@@ -65,35 +46,37 @@ def inference(input_tensor, train, regularizer):
         conv4_weights = get_weight([CONV4_SIZE, CONV4_SIZE, CONV3_DEPTH, CONV4_DEPTH])
         conv4_biases =get_bias([CONV4_DEPTH])
         conv4 = tf.nn.conv2d(pooling3, conv4_weights, strides=[1,1,1,1], padding='SAME')
-        relu4 = tf.nn/relu(tf.nn.bias_add(conv4, conv4_biases))
-    with tf.name_scopt("pooling4"):
+        relu4 = tf.nn.relu(tf.nn.bias_add(conv4, conv4_biases))
+    with tf.name_scope("pooling4"):
         pooling4 = tf.nn.max_pool(relu4, ksize=[1, 2, 2, 1],
                         strides=[1, 2, 2, 1], padding='SAME')
 
 
-    conv_out_shape = pooling4.get_shape().as_list()
-    nodes1 = conv_out_shape[1]*conv_out_shape[2]*conv_out_shape[3]
-    fc_input = tf.reshape(pooling4, [conv_out_shape[0], nodes])
+    conv_out_shape = pooling4.get_shape()
+    nodes = conv_out_shape[1]*conv_out_shape[2]*conv_out_shape[3]
+    # 训练时设为[batch_size, nodes], 输入单张图片时设为[1, nodes], 如果不这样主动设置会出问题
+    # 有解决办法，但还不知道
+    fc_input = tf.reshape(pooling4, [-1, nodes])
     # 第一层全连接
     with tf.variable_scope('fc_layer_1'):
         fc_weights_1 = get_weight([nodes, FC1_SIZE])
         if regularizer !=None:
-            tf.add_to_collection("loss", regularizer(fc_weights_1))
+            tf.add_to_collection("losses", regularizer(fc_weights_1))
         fc_biases_1 = get_bias([FC1_SIZE])
         fc_layer_1 = tf.nn.relu(tf.matmul(fc_input, fc_weights_1)+fc_biases_1)
         # 只在全连接层且是训练时才需要dropout
         if train: fc_layer_1 = tf.nn.dropout(fc_layer_1, 0.5)
     # 第二层全连接
-    with tf.variable_op_scope("fc_layer_2"):
+    with tf.variable_scope("fc_layer_2"):
         fc_weights_2 = get_weight([FC1_SIZE, FC2_SIZE])
         if regularizer !=None:
-            tf.add_to_collection("loss", regularizer(fc_weights_2))
+            tf.add_to_collection("losses", regularizer(fc_weights_2))
         fc_biases_2 = get_bias([FC2_SIZE])
         fc_layer_2 = tf.nn.relu(tf.matmul(fc_layer_1, fc_weights_2)+fc_biases_2)
         # 只在全连接层且是训练时才需要dropout
         if train: fc_layer_2 = tf.nn.dropout(fc_layer_2, 0.5)
     # 第三次全连接
-    with tf.variable_op_scope("fc_layer_3"):
+    with tf.variable_scope("fc_layer_3"):
         fc_weights_3 = get_weight([FC2_SIZE, OUTPUT_SIZE])
         if regularizer !=None:
             tf.add_to_collection("losses", regularizer(fc_weights_3))
