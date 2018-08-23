@@ -42,20 +42,19 @@ def inference(input_tensor, train, regularizer):
         pooling3 = tf.nn.max_pool(relu3, ksize=[1, 2, 2, 1],
                         strides=[1, 2, 2, 1], padding='SAME')
     # 第四层 4*4*conv4_depth(4*4*108)
-    with tf.variable_scope("conv4"):
+    '''with tf.variable_scope("conv4"):
         conv4_weights = get_weight([CONV4_SIZE, CONV4_SIZE, CONV3_DEPTH, CONV4_DEPTH])
         conv4_biases =get_bias([CONV4_DEPTH])
         conv4 = tf.nn.conv2d(pooling3, conv4_weights, strides=[1,1,1,1], padding='SAME')
         relu4 = tf.nn.relu(tf.nn.bias_add(conv4, conv4_biases))
     with tf.name_scope("pooling4"):
         pooling4 = tf.nn.max_pool(relu4, ksize=[1, 2, 2, 1],
-                        strides=[1, 2, 2, 1], padding='SAME')
+                        strides=[1, 2, 2, 1], padding='SAME')'''
 
 
-    conv_out_shape = pooling4.get_shape()
+    conv_out_shape = pooling3.get_shape()
     nodes = conv_out_shape[1]*conv_out_shape[2]*conv_out_shape[3]
-    # 训练时设为[batch_size, nodes], 输入单张图片时设为[1, nodes], 如果不这样主动设置会出问题
-    # 有解决办法，但还不知道
+    # 根据第二个维度调整第一维度
     fc_input = tf.reshape(pooling4, [-1, nodes])
     # 第一层全连接
     with tf.variable_scope('fc_layer_1'):
