@@ -10,15 +10,7 @@ other_faces_path = 'D:/Total/own_face_recognition/dataset/faces/other_faces'
 size = 64
 
 
-def readData(path, h=size, w=size):
-    global imgs
-    global labs
-    for filename in os.listdir(path):
-        if filename.endswith('.jpg'):
-            filename = path + '/' + filename
-            img = cv2.imread(filename)
-            imgs.append(img)
-            labs.append(path)
+
 
 def get_data():
     labs = []

@@ -41,15 +41,6 @@ def inference(input_tensor, train, regularizer):
     with tf.name_scope("pooling3"):
         pooling3 = tf.nn.max_pool(relu3, ksize=[1, 2, 2, 1],
                         strides=[1, 2, 2, 1], padding='SAME')
-    # 第四层 4*4*conv4_depth(4*4*108)
-    '''with tf.variable_scope("conv4"):
-        conv4_weights = get_weight([CONV4_SIZE, CONV4_SIZE, CONV3_DEPTH, CONV4_DEPTH])
-        conv4_biases =get_bias([CONV4_DEPTH])
-        conv4 = tf.nn.conv2d(pooling3, conv4_weights, strides=[1,1,1,1], padding='SAME')
-        relu4 = tf.nn.relu(tf.nn.bias_add(conv4, conv4_biases))
-    with tf.name_scope("pooling4"):
-        pooling4 = tf.nn.max_pool(relu4, ksize=[1, 2, 2, 1],
-                        strides=[1, 2, 2, 1], padding='SAME')'''
 
 
     conv_out_shape = pooling3.get_shape()
@@ -67,18 +58,11 @@ def inference(input_tensor, train, regularizer):
         if train: fc_layer_1 = tf.nn.dropout(fc_layer_1, 0.5)
     # 第二层全连接
     with tf.variable_scope("fc_layer_2"):
-        fc_weights_2 = get_weight([FC1_SIZE, FC2_SIZE])
+        fc_weights_2 = get_weight([FC1_SIZE, OUTPUT_SIZE])
         if regularizer !=None:
             tf.add_to_collection("losses", regularizer(fc_weights_2))
-        fc_biases_2 = get_bias([FC2_SIZE])
+        fc_biases_2 = get_bias([OUTPUT_SIZE])
         logit = tf.matmul(fc_layer_1, fc_weights_2) + fc_biases_2
-    '''# 第三次全连接
-    with tf.variable_scope("fc_layer_3"):
-        fc_weights_3 = get_weight([FC2_SIZE, OUTPUT_SIZE])
-        if regularizer !=None:
-            tf.add_to_collection("losses", regularizer(fc_weights_3))
-        fc_biases_3 = get_bias([OUTPUT_SIZE])
-        logit = tf.matmul(fc_layer_2, fc_weights_3) + fc_biases_3'''
     return logit
     
     

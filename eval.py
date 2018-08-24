@@ -24,7 +24,7 @@ def evaluate():
         variables_to_restore = variable_averages.variables_to_restore()
         saver = tf.train.Saver()
         with tf.Session() as sess:
-            saver.restore(sess, tf.train.latest_checkpoint("./model_zzk"))
+            saver.restore(sess, tf.train.latest_checkpoint("./model"))
             accuracy_score = sess.run(accuracy, 
                                         feed_dict=validate_feed)
             print("After training steps, validation "

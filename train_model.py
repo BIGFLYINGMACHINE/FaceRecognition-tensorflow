@@ -37,8 +37,10 @@ def train():
     correct_prediction = tf.equal(tf.argmax(y, 1), tf.argmax(y_, 1))
     accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
     # 交叉熵
-    cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=y,
-                                                                   labels=tf.arg_max(y_, 1))
+    '''cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=y,
+                                                                   labels=tf.arg_max(y_, 1)'''
+    cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits=y,
+                                                                   labels=y_)
     cross_entropy_mean = tf.reduce_mean(cross_entropy)
     # 损失函数
     losses = cross_entropy_mean + tf.add_n(tf.get_collection('losses'))
@@ -61,6 +63,7 @@ def train():
             _, loss_value, step = sess.run([train_op, losses, global_step],
                                            feed_dict={x: xs, y_: ys})
             if i % 300 == 0:
+
                 accuracy_train = sess.run(accuracy,
                                           feed_dict={x: xs, y_: ys})
                 accuracy_test = sess.run(accuracy,
