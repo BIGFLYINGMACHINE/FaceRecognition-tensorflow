@@ -6,7 +6,7 @@ import os
 import random
 import sys
 from sklearn.model_selection import train_test_split
-import inference_zzk as infer
+import inference as infer
 IMAGE_SIZE = 64
 
 
@@ -19,7 +19,7 @@ with tf.Graph().as_default() as g:
     predict = tf.argmax(out, 1)
     with tf.Session() as sess:
         saver = tf.train.Saver()
-        saver.restore(sess, tf.train.latest_checkpoint("./model_zzk")) 
+        saver.restore(sess, tf.train.latest_checkpoint("./model")) 
         #使用dlib自带的frontal_face_detector作为我们的特征提取器
         detector = dlib.get_frontal_face_detector()
 

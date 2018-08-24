@@ -4,13 +4,13 @@ IMG_SIZE = 64
 NUM_CHANNELS = 3
 # 第一层卷积层的尺寸与深度
 CONV1_SIZE = 3
-CONV1_DEPTH = 8
+CONV1_DEPTH = 18
 # 第二层
 CONV2_SIZE = 3
-CONV2_DEPTH = 16
+CONV2_DEPTH = 32
 # 第三层
 CONV3_SIZE = 3
-CONV3_DEPTH = 32
+CONV3_DEPTH = 45
 # 第四层
 CONV4_SIZE = 3
 CONV4_DEPTH = 40
@@ -20,14 +20,17 @@ FC2_SIZE = 64
 OUTPUT_SIZE = 2
 
 
-LEARNING_RATE_BASE = 0.5
-LEARNING_RATE_DECAY = 0.99
-REGULARAZATION_RATE = 0.0001
+LEARNING_RATE_BASE = 0.01
+LEARNING_RATE_DECAY = 0.97
+DECAY_STEPS = 100 # 与学习率的指数衰减有关，此数值越大衰减越慢
+# decayed_learning_rate = learning_rate_base *
+#                        decay_rate ^ (global_step / decay_steps)
+REGULARAZATION_RATE = 0.0005
 TRAINING_STEPS = 30000
 MOVING_AVERAGE_DECAY = 0.99
-MODEL_SAVE_PATH = "./model_zzk"
+MODEL_SAVE_PATH = "./model"
 MODEL_NAME = "model.ckpt"
-DECAY_STEPS = 400 # 与学习率的指数衰减有关，此数值越大衰减越慢
+
 
 # 定义了保存参数以及运行结果的函数
 def save_parameters_as_csv(outcome, csv_path):

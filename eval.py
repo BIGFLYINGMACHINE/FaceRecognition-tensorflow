@@ -1,8 +1,8 @@
 import tensorflow as tf
-import input_data_zzk as input_data
+import input_data as input_data
 
-import inference_zzk as infer
-import train_zzk as train
+import inference as infer
+import train_model as train
 from parameters import *
 
 train_x, test_x, train_y, test_y = input_data.get_data()
