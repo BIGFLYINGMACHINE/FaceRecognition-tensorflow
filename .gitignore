@@ -6,4 +6,5 @@ __pycache__/
 *.model-100.data-00000-of-00001
 tmp/
 checkpoint
-model_zzk/
+model/
+.vscode/
