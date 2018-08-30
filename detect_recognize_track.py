@@ -26,12 +26,12 @@ with tf.Graph().as_default() as g:
                 gray_image = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
                 dets = detector(gray_image, 1)
                 for i, d in enumerate(dets):
-                    x1 = d.top() if d.top() > 0 else 0
-                    y1 = d.bottom() if d.bottom() > 0 else 0
-                    x2 = d.left() if d.left() > 0 else 0
-                    y2 = d.right() if d.right() > 0 else 0
-                    face = img[x1:y1,x2:y2]
-                    bbox = (x1, y1, x2, y2)
+                    y1 = d.top() if d.top() > 0 else 0
+                    y2 = d.bottom() if d.bottom() > 0 else 0
+                    x1 = d.left() if d.left() > 0 else 0
+                    x2 = d.right() if d.right() > 0 else 0
+                    face = img[y1:y2,x1:x2]
+                    bbox = (x1, y1, x2-x1, y2-y1) # (xmin,ymin,boxwidth,boxheight)
                     # 调整图片的尺寸
                     input_image = cv2.resize(face, (IMAGE_SIZE,IMAGE_SIZE))
                     input_image = np.array(input_image)/255.0
@@ -42,16 +42,12 @@ with tf.Graph().as_default() as g:
                     print(out)
                     if res[0] == 1:  
                         # 是本人
-                        cv2.rectangle(img, (x2,x1),(y2,y1), (0,0,255),3)
-
                         tracker = cv2.TrackerKCF_create()
                         ok = tracker.init(img, bbox)
                         face_comfirmed = True
                 cv2.imshow('image',img)
-                key = cv2.waitKey(30) & 0xff
-                if key == 27:
-                    sys.exit(0)
-            while True:
+            while face_comfirmed:
+                _, img = cam.read() 
                 timer = cv2.getTickCount()
                 # 更新
                 ok, bbox = tracker.update(img)
